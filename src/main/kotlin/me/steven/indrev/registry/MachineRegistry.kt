@@ -4,6 +4,7 @@ import me.steven.indrev.IndustrialRevolution.CONFIG
 import me.steven.indrev.blockentities.cables.CableBlockEntity
 import me.steven.indrev.blockentities.crafters.*
 import me.steven.indrev.blockentities.farms.*
+import me.steven.indrev.blockentities.farms.modular.StationControllerBlockEntity
 import me.steven.indrev.blockentities.generators.BiomassGeneratorBlockEntity
 import me.steven.indrev.blockentities.generators.CoalGeneratorBlockEntity
 import me.steven.indrev.blockentities.generators.HeatGeneratorBlockEntity
@@ -43,7 +44,7 @@ import java.util.function.Supplier
 class MachineRegistry(private val identifier: Identifier, val upgradeable: Boolean = true, vararg val tiers: Tier = Tier.values()) {
 
     private val configs: MutableMap<Tier, IConfig> = mutableMapOf()
-    private val blocks: MutableMap<Tier, Block> = mutableMapOf()
+    val blocks: MutableMap<Tier, Block> = mutableMapOf()
     private val blockEntities: MutableMap<Tier, BlockEntityType<*>> = mutableMapOf()
 
     fun register(blockProvider: (Tier) -> Block, entityProvider: (Tier) -> () -> BlockEntity): MachineRegistry {
@@ -381,6 +382,22 @@ class MachineRegistry(private val identifier: Identifier, val upgradeable: Boole
                 ) { FarmerBlockEntity(tier) }
             },
             { tier -> { FarmerBlockEntity(tier) } }
+        )
+
+        val STATION_CONTROLLER_REGISTRY = MachineRegistry(identifier("station_controller"), true).register(
+            { tier ->
+                HorizontalFacingMachineBlock(
+                    MACHINE_BLOCK_SETTINGS(),
+                    tier,
+                    when (tier) {
+                        Tier.MK1 -> CONFIG.machines.stationControllerMk1
+                        Tier.MK2 -> CONFIG.machines.stationControllerMk2
+                        Tier.MK3 -> CONFIG.machines.stationControllerMk3
+                        else -> CONFIG.machines.stationControllerMk4
+                    }, ::StationControllerController
+                ) { StationControllerBlockEntity(tier) }
+            },
+            { tier -> { StationControllerBlockEntity(tier) } }
         )
 
         val RANCHER_REGISTRY = MachineRegistry(identifier("rancher"), true).register(

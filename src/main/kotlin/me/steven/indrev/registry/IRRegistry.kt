@@ -2,9 +2,11 @@ package me.steven.indrev.registry
 
 import me.steven.indrev.armor.IRArmorMaterial
 import me.steven.indrev.blockentities.drill.DrillBlockEntity
+import me.steven.indrev.blockentities.farms.modular.FertilizerBlockEntity
 import me.steven.indrev.blockentities.storage.CabinetBlockEntity
 import me.steven.indrev.blockentities.storage.TankBlockEntity
 import me.steven.indrev.blocks.*
+import me.steven.indrev.blocks.HorizontalFacingBlock
 import me.steven.indrev.blocks.machine.DrillBlock
 import me.steven.indrev.fluids.BaseFluid
 import me.steven.indrev.items.armor.IRColorModuleItem
@@ -25,10 +27,8 @@ import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricMaterialBuilder
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags
-import net.minecraft.block.Block
-import net.minecraft.block.FluidBlock
-import net.minecraft.block.Material
-import net.minecraft.block.MaterialColor
+import net.minecraft.block.*
+import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.EquipmentSlot
@@ -40,6 +40,7 @@ import net.minecraft.util.Formatting
 import net.minecraft.util.Rarity
 import net.minecraft.util.registry.BuiltinRegistries
 import net.minecraft.util.registry.Registry
+import net.minecraft.world.BlockView
 import net.minecraft.world.World
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -248,6 +249,8 @@ object IRRegistry {
         identifier("drill_middle").block(DRILL_MIDDLE)
         identifier("drill_bottom").block(DRILL_BOTTOM).item(BlockItem(DRILL_BOTTOM, itemSettings()))
         identifier("drill").blockEntityType(DRILL_BLOCK_ENTITY_TYPE)
+
+        identifier("fertilizer").block(FERTILIZER_BLOCK).item(FERTILIZER_BLOCK_ITEM).blockEntityType(FERTILIZER_BLOCK_ENTITY_TYPE)
         
         WorldGeneration.init()
 
@@ -466,4 +469,12 @@ object IRRegistry {
     val TANK_BLOCK_ITEM = BlockItem(TANK_BLOCK, itemSettings())
 
     val TANK_BLOCK_ENTITY: BlockEntityType<TankBlockEntity> = BlockEntityType.Builder.create({ TankBlockEntity() }, TANK_BLOCK).build(null)
+
+    val FERTILIZER_BLOCK: Block = object : Block(
+        FabricBlockSettings.of(Material.METAL).requiresTool().nonOpaque().breakByTool(FabricToolTags.PICKAXES, 2).strength(3F, 6F)
+    ), BlockEntityProvider {
+        override fun createBlockEntity(world: BlockView?): BlockEntity? = FertilizerBlockEntity()
+    }
+    val FERTILIZER_BLOCK_ITEM = BlockItem(FERTILIZER_BLOCK, itemSettings())
+    val FERTILIZER_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create({ FertilizerBlockEntity() }, FERTILIZER_BLOCK).build(null)
 }

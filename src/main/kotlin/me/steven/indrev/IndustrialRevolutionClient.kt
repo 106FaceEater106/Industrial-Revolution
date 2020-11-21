@@ -100,7 +100,9 @@ object IndustrialRevolutionClient : ClientModInitializer {
             IndustrialRevolution.COMPRESSOR_FACTORY_HANDLER,
             IndustrialRevolution.INFUSER_FACTORY_HANDLER,
             IndustrialRevolution.CABINET_HANDLER,
-            IndustrialRevolution.DRILL_HANDLER
+            IndustrialRevolution.DRILL_HANDLER,
+            IndustrialRevolution.FERTILIZER_HANDLER,
+            IndustrialRevolution.STATION_CONTROLLER_HANDLER
         ).forEach { handler ->
             ScreenRegistry.register(handler) { controller, inv, _ -> IRInventoryScreen(controller, inv.player) }
         }
@@ -108,6 +110,7 @@ object IndustrialRevolutionClient : ClientModInitializer {
         MachineRegistry.CHOPPER_REGISTRY.registerBlockEntityRenderer(::AOEMachineBlockEntityRenderer)
         MachineRegistry.RANCHER_REGISTRY.registerBlockEntityRenderer(::AOEMachineBlockEntityRenderer)
         MachineRegistry.FARMER_REGISTRY.registerBlockEntityRenderer(::AOEMachineBlockEntityRenderer)
+        MachineRegistry.STATION_CONTROLLER_REGISTRY.registerBlockEntityRenderer(::AOEMachineBlockEntityRenderer)
         MachineRegistry.MODULAR_WORKBENCH_REGISTRY.registerBlockEntityRenderer(::ModularWorkbenchBlockEntityRenderer)
         MachineRegistry.CHARGE_PAD_REGISTRY.registerBlockEntityRenderer(::ChargePadBlockEntityRenderer)
         MachineRegistry.CONDENSER_REGISTRY.registerBlockEntityRenderer(::CondenserBlockEntityRenderer)
