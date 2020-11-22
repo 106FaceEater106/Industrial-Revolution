@@ -2,7 +2,7 @@ package me.steven.indrev.registry
 
 import me.steven.indrev.armor.IRArmorMaterial
 import me.steven.indrev.blockentities.drill.DrillBlockEntity
-import me.steven.indrev.blockentities.farms.modular.FertilizerBlockEntity
+import me.steven.indrev.blockentities.farms.modular.FertilizingStationBlockEntity
 import me.steven.indrev.blockentities.storage.CabinetBlockEntity
 import me.steven.indrev.blockentities.storage.TankBlockEntity
 import me.steven.indrev.blocks.*
@@ -473,8 +473,8 @@ object IRRegistry {
     val FERTILIZER_BLOCK: Block = object : Block(
         FabricBlockSettings.of(Material.METAL).requiresTool().nonOpaque().breakByTool(FabricToolTags.PICKAXES, 2).strength(3F, 6F)
     ), BlockEntityProvider {
-        override fun createBlockEntity(world: BlockView?): BlockEntity? = FertilizerBlockEntity()
+        override fun createBlockEntity(world: BlockView?): BlockEntity? = FertilizingStationBlockEntity()
     }
     val FERTILIZER_BLOCK_ITEM = BlockItem(FERTILIZER_BLOCK, itemSettings())
-    val FERTILIZER_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create({ FertilizerBlockEntity() }, FERTILIZER_BLOCK).build(null)
+    val FERTILIZER_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create({ FertilizingStationBlockEntity() }, FERTILIZER_BLOCK).build(null)
 }

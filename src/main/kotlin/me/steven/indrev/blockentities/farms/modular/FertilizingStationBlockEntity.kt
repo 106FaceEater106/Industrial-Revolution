@@ -17,7 +17,7 @@ import net.minecraft.text.TranslatableText
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 
-class FertilizerBlockEntity : BaseStationBlockEntity(9, IRRegistry.FERTILIZER_BLOCK_ENTITY_TYPE), ExtendedScreenHandlerFactory {
+class FertilizingStationBlockEntity : BaseStationBlockEntity(9, IRRegistry.FERTILIZER_BLOCK_ENTITY_TYPE), ExtendedScreenHandlerFactory {
 
     private val config = IndustrialRevolution.CONFIG.machines.fertilizer
     private var blocksIterator = mutableListOf<BlockPos>().iterator()
