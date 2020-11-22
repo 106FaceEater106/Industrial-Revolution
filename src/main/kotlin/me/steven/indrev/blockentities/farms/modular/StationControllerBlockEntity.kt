@@ -3,35 +3,27 @@ package me.steven.indrev.blockentities.farms.modular
 import me.steven.indrev.blockentities.crafters.UpgradeProvider
 import me.steven.indrev.blockentities.farms.AOEMachineBlockEntity
 import me.steven.indrev.blocks.machine.HorizontalFacingMachineBlock
-import me.steven.indrev.components.multiblock.AbstractMultiblockMatcher
-import me.steven.indrev.components.multiblock.MultiBlockComponent
-import me.steven.indrev.components.multiblock.StationControllerStructureDefinition
-import me.steven.indrev.components.multiblock.StructureHolder
 import me.steven.indrev.config.BasicMachineConfig
 import me.steven.indrev.inventories.inventory
 import me.steven.indrev.items.upgrade.Upgrade
 import me.steven.indrev.registry.MachineRegistry
 import me.steven.indrev.utils.Tier
-import net.minecraft.util.BlockRotation
 import net.minecraft.util.math.Box
+import net.minecraft.util.math.Direction
 
 class StationControllerBlockEntity(tier: Tier) : AOEMachineBlockEntity<BasicMachineConfig>(tier, MachineRegistry.STATION_CONTROLLER_REGISTRY), UpgradeProvider {
 
     init {
-        this.multiblockComponent = MultiBlockComponent({ id -> id.structure == "controller" }) { _, _, _ -> StationControllerStructureDefinition }
         this.inventoryComponent = inventory(this) {}
     }
 
     override var range: Int = 5
 
     override fun machineTick() {
-        val matcher = multiblockComponent?.getSelectedMatcher(world!!, pos, cachedState) ?: return
-        val rotation =
-            AbstractMultiblockMatcher.rotateBlock(cachedState[HorizontalFacingMachineBlock.HORIZONTAL_FACING])
-        for (id in matcher.structureIds) {
-            StructureHolder.REGISTRY[id]?.forEach { stationOffset, _ ->
-                val stationPos = pos.subtract(stationOffset.rotate(rotation).rotate(BlockRotation.CLOCKWISE_180))
-                val station = world?.getBlockEntity(stationPos) as? BaseStationBlockEntity ?: return@forEach
+        val facing = cachedState[HorizontalFacingMachineBlock.HORIZONTAL_FACING]
+        Direction.values().forEach { dir ->
+            if (dir != facing) {
+                val station = world?.getBlockEntity(pos.offset(dir)) as? BaseStationBlockEntity ?: return@forEach
                 station.tick(pos, this, getUpgrades(inventoryComponent!!.inventory))
             }
         }
