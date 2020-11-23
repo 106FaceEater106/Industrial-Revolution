@@ -66,7 +66,7 @@ class FertilizingStationBlockEntity : BaseStationBlockEntity(9, IRRegistry.FERTI
             }
             queuedBlocks = list.iterator()
         }
-        cooldown = if (queuedBlocks.hasNext()) config.processSpeed - 2 else 0.0
+        cooldown = if (queuedBlocks.hasNext() && IndustrialRevolution.CONFIG.machines.fastSpread) config.processSpeed - 2 else 0.0
     }
 
     override fun getContainerName(): Text = TranslatableText("block.indrev.fertilizer")

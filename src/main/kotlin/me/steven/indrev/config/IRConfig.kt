@@ -148,6 +148,8 @@ class Machines : ConfigData {
     @ConfigEntry.Gui.CollapsibleObject
     val farmerMk4: MachineConfig = MachineConfig(128.0, 20.0, 50000.0, Tier.MK4.io)
 
+    val fastSpread: Boolean = true
+
     @ConfigEntry.Gui.CollapsibleObject
     val fertilizer: MachineConfig = MachineConfig(16.0, 50.0, 1000.0, Tier.MK1.io)
 
