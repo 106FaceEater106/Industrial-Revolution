@@ -29,8 +29,11 @@ class FertilizingStationBlockEntity : BaseStationBlockEntity(9, IRRegistry.FERTI
     private var cooldown = 0.0
 
     override fun tick(controllerPos: BlockPos, controller: StationControllerBlockEntity, upgrades: Map<Upgrade, Int>) {
-        cooldown += Upgrade.getSpeed(upgrades, controller)
-        if (cooldown < config.processSpeed) return
+        val isSpreading = (IndustrialRevolution.CONFIG.machines.fastSpread && controller.ticks % 4 == 0 && queuedBlocks.hasNext())
+        if (!isSpreading) {
+            cooldown += Upgrade.getSpeed(upgrades, controller)
+            if (cooldown < config.processSpeed) return
+        }
         if (!queuedBlocks.hasNext()) {
             fertilizedBlocks.clear()
             val direction = controller.cachedState[HorizontalFacingMachineBlock.HORIZONTAL_FACING]
@@ -66,7 +69,7 @@ class FertilizingStationBlockEntity : BaseStationBlockEntity(9, IRRegistry.FERTI
             }
             queuedBlocks = list.iterator()
         }
-        cooldown = if (queuedBlocks.hasNext() && IndustrialRevolution.CONFIG.machines.fastSpread) config.processSpeed - 2 else 0.0
+        cooldown = 0.0
     }
 
     override fun getContainerName(): Text = TranslatableText("block.indrev.fertilizer")
