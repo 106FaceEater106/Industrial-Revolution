@@ -6,7 +6,7 @@ import me.steven.indrev.blockentities.farms.modular.FertilizingStationBlockEntit
 import me.steven.indrev.blockentities.storage.CabinetBlockEntity
 import me.steven.indrev.blockentities.storage.TankBlockEntity
 import me.steven.indrev.blocks.*
-import me.steven.indrev.blocks.HorizontalFacingBlock
+import me.steven.indrev.blocks.machine.BaseStationBlock
 import me.steven.indrev.blocks.machine.DrillBlock
 import me.steven.indrev.fluids.BaseFluid
 import me.steven.indrev.items.armor.IRColorModuleItem
@@ -27,8 +27,10 @@ import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricMaterialBuilder
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags
-import net.minecraft.block.*
-import net.minecraft.block.entity.BlockEntity
+import net.minecraft.block.Block
+import net.minecraft.block.FluidBlock
+import net.minecraft.block.Material
+import net.minecraft.block.MaterialColor
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.EquipmentSlot
@@ -40,7 +42,6 @@ import net.minecraft.util.Formatting
 import net.minecraft.util.Rarity
 import net.minecraft.util.registry.BuiltinRegistries
 import net.minecraft.util.registry.Registry
-import net.minecraft.world.BlockView
 import net.minecraft.world.World
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -251,7 +252,7 @@ object IRRegistry {
         identifier("drill").blockEntityType(DRILL_BLOCK_ENTITY_TYPE)
 
         identifier("fertilizer").block(FERTILIZER_BLOCK).item(FERTILIZER_BLOCK_ITEM).blockEntityType(FERTILIZER_BLOCK_ENTITY_TYPE)
-        
+
         WorldGeneration.init()
 
         BuiltinRegistries.BIOME.forEach { biome -> WorldGeneration.handleBiome(biome) }
@@ -407,7 +408,7 @@ object IRRegistry {
         FabricBlockSettings.of(Material.METAL).requiresTool().nonOpaque().breakByTool(FabricToolTags.PICKAXES, 2).strength(3F, 6F)
     )
     val DRILL_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create({ DrillBlockEntity() }, DRILL_BOTTOM).build(null)
-    
+
     val STONE_DRILL_HEAD = Item(itemSettings().maxDamage(256))
     val IRON_DRILL_HEAD = Item(itemSettings().maxDamage(1024))
     val DIAMOND_DRILL_HEAD = Item(itemSettings().maxDamage(2048))
@@ -470,11 +471,7 @@ object IRRegistry {
 
     val TANK_BLOCK_ENTITY: BlockEntityType<TankBlockEntity> = BlockEntityType.Builder.create({ TankBlockEntity() }, TANK_BLOCK).build(null)
 
-    val FERTILIZER_BLOCK: Block = object : Block(
-        FabricBlockSettings.of(Material.METAL).requiresTool().nonOpaque().breakByTool(FabricToolTags.PICKAXES, 2).strength(3F, 6F)
-    ), BlockEntityProvider {
-        override fun createBlockEntity(world: BlockView?): BlockEntity? = FertilizingStationBlockEntity()
-    }
+    val FERTILIZER_BLOCK: Block = BaseStationBlock(FabricBlockSettings.of(Material.METAL).requiresTool().nonOpaque().breakByTool(FabricToolTags.PICKAXES, 2).strength(3F, 6F)) { FertilizingStationBlockEntity() }
     val FERTILIZER_BLOCK_ITEM = BlockItem(FERTILIZER_BLOCK, itemSettings())
     val FERTILIZER_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create({ FertilizingStationBlockEntity() }, FERTILIZER_BLOCK).build(null)
 }

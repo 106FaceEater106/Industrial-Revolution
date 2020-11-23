@@ -31,8 +31,7 @@ class StationControllerBlockEntity(tier: Tier) : AOEMachineBlockEntity<BasicMach
 
     override fun getWorkingArea(): Box {
         val direction = cachedState[HorizontalFacingMachineBlock.HORIZONTAL_FACING]
-        val r = range - 1.0
-        return Box(pos.offset(direction, r.toInt() + 1)).stretch(r, 0.0, r).stretch(-r, 0.0, -r)
+        return Box(pos.offset(direction, range + 1)).expand(range.toDouble(), 0.0, range.toDouble())
     }
 
     override fun getUpgradeSlots(): IntArray = intArrayOf(0, 1, 2, 3)
