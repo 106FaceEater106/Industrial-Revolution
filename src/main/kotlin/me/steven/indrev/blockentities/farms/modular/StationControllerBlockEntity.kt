@@ -18,8 +18,7 @@ class StationControllerBlockEntity(tier: Tier) : AOEMachineBlockEntity<BasicMach
     }
 
     override var range: Int = 5
-    var ticks = 0
-
+    
     override fun machineTick() {
         ticks++
         val facing = cachedState[HorizontalFacingMachineBlock.HORIZONTAL_FACING]
