@@ -6,7 +6,10 @@ import alexiil.mc.lib.attributes.fluid.FluidInsertable
 import alexiil.mc.lib.attributes.fluid.FluidVolumeUtil
 import alexiil.mc.lib.attributes.item.ItemAttributes
 import alexiil.mc.lib.attributes.item.ItemInvUtil
+import alexiil.mc.lib.attributes.item.compat.FixedSidedInventoryVanillaWrapper
 import io.github.cottonmc.cotton.gui.PropertyDelegateHolder
+import me.steven.indrev.api.sideconfigs.Configurable
+import me.steven.indrev.api.sideconfigs.ConfigurationType
 import me.steven.indrev.blocks.machine.MachineBlock
 import me.steven.indrev.components.InventoryComponent
 import me.steven.indrev.components.TemperatureComponent
@@ -14,7 +17,6 @@ import me.steven.indrev.components.fluid.FluidComponent
 import me.steven.indrev.components.multiblock.MultiBlockComponent
 import me.steven.indrev.config.IConfig
 import me.steven.indrev.energy.EnergyMovement
-import me.steven.indrev.inventories.IRFixedInventoryVanillaWrapper
 import me.steven.indrev.registry.MachineRegistry
 import me.steven.indrev.utils.*
 import net.minecraft.block.BlockState
@@ -41,7 +43,8 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 abstract class MachineBlockEntity<T : IConfig>(val tier: Tier, val registry: MachineRegistry)
-    : IRSyncableBlockEntity(registry.blockEntityType(tier)), EnergyStorage, PropertyDelegateHolder, InventoryProvider, Tickable {
+    : IRSyncableBlockEntity(registry.blockEntityType(tier)), EnergyStorage, PropertyDelegateHolder, InventoryProvider, Tickable,
+    Configurable {
     var explode = false
     private var propertyDelegate: PropertyDelegate = ArrayPropertyDelegate(4)
 
@@ -142,6 +145,45 @@ abstract class MachineBlockEntity<T : IConfig>(val tier: Tier, val registry: Mac
 
     override fun getInventory(state: BlockState?, world: WorldAccess?, pos: BlockPos?): SidedInventory? = inventoryComponent?.inventory
 
+    override fun isConfigurable(type: ConfigurationType): Boolean {
+        return when (type) {
+            ConfigurationType.ITEM -> inventoryComponent != null
+                    && inventoryComponent?.inventory?.inputSlots?.isNotEmpty() == true
+                    && inventoryComponent?.inventory?.outputSlots?.isNotEmpty() == true
+            ConfigurationType.FLUID -> fluidComponent != null
+            ConfigurationType.ENERGY -> false
+        }
+    }
+
+    override fun applyDefault(state: BlockState, type: ConfigurationType, configuration: MutableMap<Direction, TransferMode>) {
+        val direction = (state.block as MachineBlock).getFacing(state)
+        when (type) {
+            ConfigurationType.ITEM -> {
+                configuration[direction.rotateYClockwise()] = TransferMode.INPUT
+                configuration[direction.rotateYCounterclockwise()] = TransferMode.OUTPUT
+            }
+            ConfigurationType.ENERGY -> throw IllegalArgumentException("cannot apply energy configuration to $this")
+            else -> return
+        }
+    }
+
+    override fun getValidConfigurations(type: ConfigurationType): Array<TransferMode> {
+        return when (type) {
+            ConfigurationType.ITEM -> TransferMode.values()
+            ConfigurationType.FLUID, ConfigurationType.ENERGY -> arrayOf(TransferMode.INPUT, TransferMode.OUTPUT)
+        }
+    }
+
+    override fun getCurrentConfiguration(type: ConfigurationType): MutableMap<Direction, TransferMode> {
+        return when (type) {
+            ConfigurationType.ITEM -> inventoryComponent!!.itemConfig
+            ConfigurationType.FLUID -> fluidComponent!!.transferConfig
+            ConfigurationType.ENERGY -> hashMapOf()
+        }
+    }
+
+    override fun isFixed(type: ConfigurationType): Boolean = false
+
     override fun fromTag(state: BlockState?, tag: CompoundTag?) {
         super.fromTag(state, tag)
         inventoryComponent?.fromTag(tag)
@@ -197,7 +239,7 @@ abstract class MachineBlockEntity<T : IConfig>(val tier: Tier, val registry: Mac
                     }
                     val insertable = ItemAttributes.INSERTABLE.getFirstOrNull(world, pos)
                     if (insertable != null) {
-                        val extractable = IRFixedInventoryVanillaWrapper(inventory, direction).extractable
+                        val extractable = FixedSidedInventoryVanillaWrapper.create(inventory, direction).extractable
                         ItemInvUtil.move(extractable, insertable, 64)
                     }
                 }
@@ -211,7 +253,7 @@ abstract class MachineBlockEntity<T : IConfig>(val tier: Tier, val registry: Mac
                     }
                     val extractable = ItemAttributes.EXTRACTABLE.getFirstOrNull(world, pos)
                     if (extractable != null) {
-                        val insertable = IRFixedInventoryVanillaWrapper(inventory, direction).insertable
+                        val insertable = FixedSidedInventoryVanillaWrapper.create(inventory, direction).insertable
                         ItemInvUtil.move(extractable, insertable, 64)
                     }
                 }
