@@ -11,7 +11,7 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.screen.ScreenHandlerContext
 import net.minecraft.text.TranslatableText
 
-class FertilizerController(
+class FertilizingStationController(
     syncId: Int,
     playerInventory: PlayerInventory,
     ctx: ScreenHandlerContext
@@ -22,7 +22,7 @@ class FertilizerController(
         playerInventory,
         ctx
     ) {
-    private var value = -1
+
     init {
         val root = WGridPanel()
         setRootPanel(root)

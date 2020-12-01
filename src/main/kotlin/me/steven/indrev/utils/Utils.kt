@@ -47,6 +47,8 @@ import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 import team.reborn.energy.Energy
 import team.reborn.energy.EnergySide
+import java.util.*
+import kotlin.collections.HashMap
 
 val EMPTY_INT_ARRAY = intArrayOf()
 
@@ -377,3 +379,13 @@ fun World.setBlockState(pos: BlockPos, state: BlockState, condition: (BlockState
 operator fun BlockPos.component1() = x
 operator fun BlockPos.component2() = y
 operator fun BlockPos.component3() = z
+
+fun ItemStack.isBroken() = damage >= maxDamage
+
+fun ItemStack.damage(amount: Int, random: Random, brokenCallback: (ItemStack) -> Unit): Boolean {
+    if (!damage(amount, random, null)) {
+        if (isBroken()) brokenCallback(this)
+        return true
+    }
+    return false
+}

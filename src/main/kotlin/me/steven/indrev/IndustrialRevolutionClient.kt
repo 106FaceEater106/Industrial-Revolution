@@ -104,6 +104,7 @@ object IndustrialRevolutionClient : ClientModInitializer {
             IndustrialRevolution.CABINET_HANDLER,
             IndustrialRevolution.DRILL_HANDLER,
             IndustrialRevolution.FERTILIZER_HANDLER,
+            IndustrialRevolution.CHOPPING_STATION_CONTROLLER,
             IndustrialRevolution.STATION_CONTROLLER_HANDLER
         ).forEach { handler ->
             ScreenRegistry.register(handler) { controller, inv, _ -> IRInventoryScreen(controller, inv.player) }

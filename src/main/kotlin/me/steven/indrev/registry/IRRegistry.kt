@@ -2,6 +2,7 @@ package me.steven.indrev.registry
 
 import me.steven.indrev.armor.IRArmorMaterial
 import me.steven.indrev.blockentities.drill.DrillBlockEntity
+import me.steven.indrev.blockentities.farms.modular.ChoppingStationBlockEntity
 import me.steven.indrev.blockentities.farms.modular.FertilizingStationBlockEntity
 import me.steven.indrev.blockentities.storage.CabinetBlockEntity
 import me.steven.indrev.blockentities.storage.TankBlockEntity
@@ -252,6 +253,7 @@ object IRRegistry {
         identifier("drill").blockEntityType(DRILL_BLOCK_ENTITY_TYPE)
 
         identifier("fertilizer").block(FERTILIZER_BLOCK).item(FERTILIZER_BLOCK_ITEM).blockEntityType(FERTILIZER_BLOCK_ENTITY_TYPE)
+        identifier("chopper").block(CHOPPER_BLOCK).item(CHOPPER_BLOCK_ITEM).blockEntityType(CHOPPER_BLOCK_ENTITY_TYPE)
 
         WorldGeneration.init()
 
@@ -474,4 +476,8 @@ object IRRegistry {
     val FERTILIZER_BLOCK: Block = BaseStationBlock(FabricBlockSettings.of(Material.METAL).requiresTool().nonOpaque().breakByTool(FabricToolTags.PICKAXES, 2).strength(3F, 6F)) { FertilizingStationBlockEntity() }
     val FERTILIZER_BLOCK_ITEM = BlockItem(FERTILIZER_BLOCK, itemSettings())
     val FERTILIZER_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create({ FertilizingStationBlockEntity() }, FERTILIZER_BLOCK).build(null)
+
+    val CHOPPER_BLOCK: Block = BaseStationBlock(FabricBlockSettings.of(Material.METAL).requiresTool().nonOpaque().breakByTool(FabricToolTags.PICKAXES, 2).strength(3F, 6F)) { ChoppingStationBlockEntity() }
+    val CHOPPER_BLOCK_ITEM = BlockItem(CHOPPER_BLOCK, itemSettings())
+    val CHOPPER_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create({ ChoppingStationBlockEntity() }, CHOPPER_BLOCK).build(null)
 }

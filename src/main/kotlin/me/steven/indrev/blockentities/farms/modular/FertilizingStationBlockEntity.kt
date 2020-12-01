@@ -8,10 +8,10 @@ import me.steven.indrev.registry.IRRegistry
 import me.steven.indrev.utils.component1
 import me.steven.indrev.utils.component2
 import me.steven.indrev.utils.component3
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory
 import net.minecraft.block.Fertilizable
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.item.BoneMealItem
+import net.minecraft.item.ItemStack
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.server.network.ServerPlayerEntity
@@ -21,18 +21,18 @@ import net.minecraft.text.TranslatableText
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 
-class FertilizingStationBlockEntity : BaseStationBlockEntity(9, IRRegistry.FERTILIZER_BLOCK_ENTITY_TYPE), ExtendedScreenHandlerFactory {
+class FertilizingStationBlockEntity : BaseStationBlockEntity(9, IRRegistry.FERTILIZER_BLOCK_ENTITY_TYPE) {
 
-    private val config = IndustrialRevolution.CONFIG.machines.fertilizer
+    private val speed = IndustrialRevolution.CONFIG.machines.fertilizerSpeed
     private var queuedBlocks = emptyList<BlockPos>().iterator()
     private var fertilizedBlocks = hashSetOf<BlockPos>()
     private var cooldown = 0.0
 
-    override fun tick(controllerPos: BlockPos, controller: StationControllerBlockEntity, upgrades: Map<Upgrade, Int>) {
+    override fun tick(controllerPos: BlockPos, controller: StationControllerBlockEntity, upgrades: Map<Upgrade, Int>): Boolean {
         val isSpreading = (IndustrialRevolution.CONFIG.machines.fastSpread && controller.ticks % 4 == 0 && queuedBlocks.hasNext())
         if (!isSpreading) {
             cooldown += Upgrade.getSpeed(upgrades, controller)
-            if (cooldown < config.processSpeed) return
+            if (cooldown < speed) return false
         }
         if (!queuedBlocks.hasNext()) {
             fertilizedBlocks.clear()
@@ -70,7 +70,12 @@ class FertilizingStationBlockEntity : BaseStationBlockEntity(9, IRRegistry.FERTI
             queuedBlocks = list.iterator()
         }
         cooldown = 0.0
+        return true
     }
+
+    override fun canInsert(slot: Int, stack: ItemStack, dir: Direction?): Boolean = stack.item is BoneMealItem
+
+    override fun canExtract(slot: Int, stack: ItemStack?, dir: Direction?): Boolean = false
 
     override fun getContainerName(): Text = TranslatableText("block.indrev.fertilizer")
 
